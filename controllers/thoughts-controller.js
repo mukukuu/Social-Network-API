@@ -27,7 +27,7 @@ const thoughtsController = {
         Thoughts.find({})
         .populate({path: 'reactions', select: '-__v'})
         .select('-__v')
-        // .sort({_id: -1})
+        .sort({_id: -1})
         .then(dbThoughtsData => res.json(dbThoughtsData))
         .catch(err => {
             console.log(err);
@@ -42,7 +42,7 @@ const thoughtsController = {
         .select('-__v')
         .then(dbThoughtsData => {
             if(!dbThoughtsData) {
-            res.status(404).json({message: 'No thoughts with this particular ID!'});
+            res.status(404).json({message: 'No thoughts was found'});
             return;
         }
         res.json(dbThoughtsData)
@@ -73,7 +73,8 @@ const thoughtsController = {
 
     //-------------- Delete thought by ID
     deleteThoughts({params}, res) {
-        Thoughts.findOneAndDelete({_id: params.id})
+        Thoughts.findOneAndDelete({_id: params.id}, {new: true})
+        
         .then(dbThoughtsData => {
             if (!dbThoughtsData) {
                 res.status(404).json({message: 'No thoughts found'});
@@ -90,13 +91,12 @@ const thoughtsController = {
             {_id: params.thoughtId}, 
             {$push: {reactions: body}}, 
             {new: true, runValidators: true})
-        .populate({path: 'reactions', select: '-__v'})
-        .select('-__v')
-        .then(dbThoughtsData => {
-        if (!dbThoughtsData) {
-            res.status(404).json({message: 'No thoughts found'});
-            return;
-        }
+            .then(dbThoughtData => {
+                if (!dbThoughtData) {
+                    res.status(404).json({ message: 'No thought found with this id!' });
+                    return;
+                }
+
         res.json(dbThoughtsData);
         })
         .catch(err => res.status(400).json(err))
@@ -105,10 +105,11 @@ const thoughtsController = {
 
     // ---------------------- Delete a reaction by ID
     deleteReaction({params}, res) {
-        Thoughts.findOneAndUpdate(
+    
+    Thoughts.findOneAndUpdate(
             {_id: params.thoughtId}, 
-            {$pull: {reactions: {reactionId: params.reactionId}}}, 
-            {new : true})
+            {$pull: { reactions: { reactionId: params.reactionId } }}, 
+            { new : true, runValidators: true  })
         .then(dbThoughtsData => {
             if (!dbThoughtsData) {
                 res.status(404).json({message: 'No thoughts found'});

@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "nodemon server.js"
+    "watch": "nodemon server.js",
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -21,7 +22,7 @@
   "dependencies": {
     "express": "^4.17.1",
     "moment": "^2.27.0",
-    "mongoose": "^5.9.23",
+    "mongoose": "^6.2.6",
     "nodemon": "^2.0.4"
   }
 }
